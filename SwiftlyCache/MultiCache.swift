@@ -51,9 +51,9 @@ public class MultiCacheGenerator<Value:Codable>:IteratorProtocol{
 private let cacheIdentifier: String = "com.swiftcache.hybrid"
 public class MultiCache<Value:Codable>{
     
-    public let memoryCache:MemoryCache = MemoryCache<Value>()
+    public let memoryCache: MemoryCache = MemoryCache<Value>()
     
-    public let diskCache:DiskCache<Value>
+    public let diskCache: DiskCache<Value>
     
     /**
      磁盘缓存路径
@@ -62,8 +62,8 @@ public class MultiCache<Value:Codable>{
     
     private let queue: DispatchQueue = DispatchQueue(label: cacheIdentifier, attributes: DispatchQueue.Attributes.concurrent)
     
-    public init(cacheName:String="default") {
-        self.diskCachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
+    public init(cachePath: String? = nil, cacheName:String = "default") {
+        self.diskCachePath = cachePath ?? NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0]
         self.diskCachePath = self.diskCachePath + ("/\(cacheName)")
         self.diskCache = DiskCache(path: self.diskCachePath)
     }

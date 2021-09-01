@@ -62,11 +62,11 @@ public class DiskCache<Value:Codable>{
     */
     public var maxCountLimit:vm_size_t = 0
     /**
-     缓存的过期时间(默认是一周)
+     缓存的过期时间(默认是一周), 0不过期
      */
-    public var maxCachePeriodInSecond:TimeInterval = 60 * 60 * 24 * 7
+    public var maxCachePeriodInSecond: TimeInterval = 60 * 60 * 24 * 7
     
-    fileprivate let storage:DiskStorage<Value>
+    fileprivate let storage: DiskStorage<Value>
     
     private let semaphoreSignal = DispatchSemaphore(value: 1)
     
@@ -74,7 +74,7 @@ public class DiskCache<Value:Codable>{
     
     private let dataMaxSize = 20 * 1024
     
-    public var autoInterval:TimeInterval = 120
+    public var autoInterval: TimeInterval = 120
     
     var keys = [String]()
     
@@ -159,7 +159,10 @@ public class DiskCache<Value:Codable>{
      @return 移除成功,返回true,否则返回false
      */
     @discardableResult
-    private func removeExpired()->Bool{
+    private func removeExpired() -> Bool {
+        if maxCachePeriodInSecond == .zero {
+            return true
+        }
         var currentTime = Date().timeIntervalSince1970
         currentTime -= maxCachePeriodInSecond
         let fin = storage.dbRemoveAllExpiredData(time: currentTime)
@@ -167,7 +170,7 @@ public class DiskCache<Value:Codable>{
     }
     
     @discardableResult
-    public func removeAllExpired()->Bool{
+    public func removeAllExpired() -> Bool {
         semaphoreSignal.wait()
         let fin = removeExpired()
         semaphoreSignal.signal()
